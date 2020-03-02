@@ -84,8 +84,10 @@ def move():
     
 
     # for key in directions:
-
-    move = random.choice(moves)
+    if len(moves) == 0:
+        move = "up"
+    else:
+        move = random.choice(moves)
 
     # Shouts are messages sent to all the other snakes in the game.
     # Shouts are not displayed on the game board.
