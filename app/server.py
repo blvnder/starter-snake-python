@@ -59,6 +59,12 @@ def move():
     print("\n\n xWalls: ", xWalls, "\n\n")
     print("\n\n yWalls: ", yWalls, "\n\n")
 
+    snakeSpots = []
+    if (len(data["board"]["snakes"]) > 0):
+        for snake in data["board"]["snakes"]:
+            print("snake: ", snake)
+            snakeSpots += snake["body"]
+
     newLocations = {}
     for direction in directions:
         newLocations[direction] = {}
@@ -78,7 +84,7 @@ def move():
     counter = 0
     for location in newLocations.values():
         print("\n\n location: ", location, "\n\n")
-        if location not in data["you"]["body"][:-1] and location['x'] not in xWalls and location['y'] not in yWalls:
+        if location not in data["you"]["body"][:-1] and location['x'] not in xWalls and location['y'] not in yWalls and location not in snakeSpots:
             moves.append(directions[counter])
         counter += 1
     
