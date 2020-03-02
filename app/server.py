@@ -78,7 +78,7 @@ def move():
     counter = 0
     for location in newLocations.values():
         print("\n\n location: ", location, "\n\n")
-        if location not in data["you"]["body"] and location['x'] not in xWalls and location['y'] not in yWalls:
+        if location not in data["you"]["body"][:-1] and location['x'] not in xWalls and location['y'] not in yWalls:
             moves.append(directions[counter])
         counter += 1
     
