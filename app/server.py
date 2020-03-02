@@ -74,17 +74,18 @@ def move():
     newLocations["right"]["y"] = currentLocation["y"]
 
     #choosing a move that doesn't kill us
+    moves = []
     counter = 0
     for location in newLocations.values():
         print("\n\n location: ", location, "\n\n")
         if location not in data["you"]["body"] and location['x'] not in xWalls and location['y'] not in yWalls:
-            move = directions[counter]
-            break
+            moves.append(directions[counter])
         counter += 1
+    
 
     # for key in directions:
 
-    # move = random.choice(directions)
+    move = random.choice(moves)
 
     # Shouts are messages sent to all the other snakes in the game.
     # Shouts are not displayed on the game board.
