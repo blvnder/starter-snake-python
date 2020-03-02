@@ -48,7 +48,30 @@ def move():
 
     # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
-    move = random.choice(directions)
+    currentLocation = data["you"]["body"][0]
+    print("\n\n\n\n this is the current location: ", currentLocation, "\n\n\n")
+    newLocations = {}
+    for direction in directions:
+        newLocations[direction] = {}
+    newLocations["up"]["x"] = currentLocation["x"]
+    newLocations["up"]["y"] = currentLocation["y"]+1
+    newLocations["down"]["x"] = currentLocation["x"]
+    newLocations["down"]["y"] = currentLocation["y"]-1
+    newLocations["left"]["x"] = currentLocation["x"]-1
+    newLocations["left"]["y"] = currentLocation["y"]
+    newLocations["up"]["x"] = currentLocation["x"]+1
+    newLocations["up"]["y"] = currentLocation["y"]
+
+    counter = 0
+    for location in newLocations:
+        if location not in currentLocation != data["you"]["body"]:
+            move = directions[counter]
+            break
+        counter += 1
+
+    # for key in directions:
+
+    # move = random.choice(directions)
 
     # Shouts are messages sent to all the other snakes in the game.
     # Shouts are not displayed on the game board.
