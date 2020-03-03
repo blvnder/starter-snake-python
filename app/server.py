@@ -76,33 +76,28 @@ def move():
     directions = ["up", "down", "left", "right"]
     board = Board(data['board']['height'], data['board']['width'], data['board']['food'], data['board']['snakes'])
     player = Snake(data['you']['id'], data['you']['name'], data['you']['health'], data['you']['body'])
-    currentLocation = player.head
-    # print("\n\n\n\n this is the current location: ", currentLocation, "\n\n\n")
 
     #wall locations
     xWalls = [-1, board.width]
     yWalls = [-1, board.height]
 
-    snakeSpots = []
-    if (len(board.snakes) > 0):
-        for snake in board.snakes:
-            snakeSpots += snake["body"]
+    snakeSpots = board.getSnakeSpots(data)
 
     #choosing a move that doesn't kill us
-    moves = GetSafeMoves(currentLocation, xWalls, yWalls, snakeSpots)
+    moves = GetSafeMoves(player.head, xWalls, yWalls, snakeSpots)
     mostDirectionsOpen = 0 #we want to choose the move that gives us the most options from there so we don't corner ourself
     goodMoves = []
     for option in moves:
     #this loop looks one move into the future and chooses the moves that leave the most spaces open to move into next
-        directionsOpen = len(GetSafeMoves(GetNewLocations(currentLocation)[option], xWalls, yWalls, snakeSpots))
-        print("\n directions open for ", option, " at ", GetNewLocations(currentLocation)[option], " is ", directionsOpen)
+        directionsOpen = len(GetSafeMoves(GetNewLocations(player.head)[option], xWalls, yWalls, snakeSpots))
+        # print("\n directions open for ", option, " at ", GetNewLocations(currentLocation)[option], " is ", directionsOpen)
         if directionsOpen == mostDirectionsOpen:
             goodMoves.append(option)
         elif directionsOpen > mostDirectionsOpen:
             goodMoves = [option]
             mostDirectionsOpen = directionsOpen
 
-    print("\n good moves: ", goodMoves)
+    # print("\n good moves: ", goodMoves)
     # for key in directions:
     if len(moves) == 0:
         move = random.choice(directions)
