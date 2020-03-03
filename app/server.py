@@ -4,6 +4,7 @@ import random
 
 import bottle
 from bottle import HTTPResponse
+from game import *
 
 
 @bottle.route("/")
@@ -50,10 +51,10 @@ def move():
     #returns moves that go into an open space
         safeMoves = []
         counter = 0
-        directions = ["up", "down", "left", "right"]
-        for location in GetNewLocations(position).values():
-            if location not in data["you"]["body"][:-1] and location['x'] not in xWalls and location['y'] not in yWalls and location not in snakeSpots:
-                safeMoves.append(directions[counter])
+        for location in newLocations.values():
+            # print("\n\n location: ", location, "\n\n")
+            if location not in player.body[-1] and location['x'] not in xWalls and location['y'] not in yWalls and location not in snakeSpots:
+                moves.append(directions[counter])
             counter += 1
         return safeMoves
 
@@ -74,18 +75,18 @@ def move():
         return newLocations
 
     directions = ["up", "down", "left", "right"]
-    currentLocation = data["you"]["body"][0]
-    print("\n\n\n\n this is the current location: ", currentLocation, "\n\n\n")
+    board = Board(data['board']['height'], data['board']['width'], data['board']['food'], data['board']['snakes'])
+    player = Snake(data['you']['id'], data['you']['name'], data['you']['health'], data['you']['body'])
+    currentLocation = player.head
+    # print("\n\n\n\n this is the current location: ", currentLocation, "\n\n\n")
 
     #wall locations
-    xWalls = [-1]
-    xWalls.append(data["board"]["width"])
-    yWalls = [-1]
-    yWalls.append(data["board"]["height"])
+    xWalls = [-1, board.width]
+    yWalls = [-1, board.height]
 
     snakeSpots = []
-    if (len(data["board"]["snakes"]) > 0):
-        for snake in data["board"]["snakes"]:
+    if (len(board.snakes) > 0):
+        for snake in board.snakes:
             snakeSpots += snake["body"]
 
     #choosing a move that doesn't kill us
