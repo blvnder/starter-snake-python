@@ -51,10 +51,9 @@ def move():
     #returns moves that go into an open space
         safeMoves = []
         counter = 0
-        for location in newLocations.values():
-            # print("\n\n location: ", location, "\n\n")
-            if location not in player.body[-1] and location['x'] not in xWalls and location['y'] not in yWalls and location not in snakeSpots:
-                moves.append(directions[counter])
+        for location in GetNewLocations(position).values():
+            if location not in player.body[:-1] and location['x'] not in xWalls and location['y'] not in yWalls and location not in snakeSpots:
+                safeMoves.append(directions[counter])
             counter += 1
         return safeMoves
 
