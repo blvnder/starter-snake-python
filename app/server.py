@@ -47,62 +47,31 @@ def move():
     data = bottle.request.json
     print("MOVE:", json.dumps(data))
 
-    def GetSafeMoves(position, xWalls, yWalls, snakeSpots):
-    #returns moves that go into an open space
-        safeMoves = []
-        counter = 0
-        for location in GetNewLocations(position).values():
-            if location not in player.body[:-1] and location['x'] not in xWalls and location['y'] not in yWalls and location not in snakeSpots:
-                safeMoves.append(directions[counter])
-            counter += 1
-        return safeMoves
-
-    def GetNewLocations(location):
-    #returns a dictionary of the 4 possible moves as keys with the position they lead to as values
-        newLocations = {}
-        directions = ["up", "down", "left", "right"]
-        for direction in directions:
-            newLocations[direction] = {}
-        newLocations["up"]["x"] = location["x"]
-        newLocations["up"]["y"] = location["y"]-1
-        newLocations["down"]["x"] = location["x"]
-        newLocations["down"]["y"] = location["y"]+1
-        newLocations["left"]["x"] = location["x"]-1
-        newLocations["left"]["y"] = location["y"]
-        newLocations["right"]["x"] = location["x"]+1
-        newLocations["right"]["y"] = location["y"]
-        return newLocations
-
     directions = ["up", "down", "left", "right"]
     board = Board(data['board']['height'], data['board']['width'], data['board']['food'], data['board']['snakes'])
-    player = Snake(data['you']['id'], data['you']['name'], data['you']['health'], data['you']['body'])
-    currentLocation = player.head
-    # print("\n\n\n\n this is the current location: ", currentLocation, "\n\n\n")
+    player = Player(data['you']['id'], data['you']['name'], data['you']['health'], data['you']['body'])
 
     #wall locations
     xWalls = [-1, board.width]
     yWalls = [-1, board.height]
 
-    snakeSpots = []
-    if (len(board.snakes) > 0):
-        for snake in board.snakes:
-            snakeSpots += snake["body"]
+    snakeSpots = board.getSnakeSpots(data)
 
     #choosing a move that doesn't kill us
-    moves = GetSafeMoves(currentLocation, xWalls, yWalls, snakeSpots)
+    moves = player.getSafeMoves(player.head, directions, xWalls, yWalls, snakeSpots)
     mostDirectionsOpen = 0 #we want to choose the move that gives us the most options from there so we don't corner ourself
     goodMoves = []
     for option in moves:
     #this loop looks one move into the future and chooses the moves that leave the most spaces open to move into next
-        directionsOpen = len(GetSafeMoves(GetNewLocations(currentLocation)[option], xWalls, yWalls, snakeSpots))
-        print("\n directions open for ", option, " at ", GetNewLocations(currentLocation)[option], " is ", directionsOpen)
+        directionsOpen = len(player.getSafeMoves(player.getNewLocations(player.head, directions)[option], directions, xWalls, yWalls, snakeSpots))
+        # print("\n directions open for ", option, " at ", GetNewLocations(currentLocation)[option], " is ", directionsOpen)
         if directionsOpen == mostDirectionsOpen:
             goodMoves.append(option)
         elif directionsOpen > mostDirectionsOpen:
             goodMoves = [option]
             mostDirectionsOpen = directionsOpen
 
-    print("\n good moves: ", goodMoves)
+    # print("\n good moves: ", goodMoves)
     # for key in directions:
     if len(moves) == 0:
         move = random.choice(directions)
