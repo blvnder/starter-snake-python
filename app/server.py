@@ -46,6 +46,16 @@ def move():
     data = bottle.request.json
     print("MOVE:", json.dumps(data))
 
+    def getSafeMoves(position):
+        moves = []
+        counter = 0
+        for location in newLocations.values():
+            print("\n\n location: ", location, "\n\n")
+            if location not in data["you"]["body"][:-1] and location['x'] not in xWalls and location['y'] not in yWalls and location not in snakeSpots:
+                moves.append(directions[counter])
+            counter += 1
+        return moves
+
     directions = ["up", "down", "left", "right"]
     currentLocation = data["you"]["body"][0]
     print("\n\n\n\n this is the current location: ", currentLocation, "\n\n\n")
@@ -80,14 +90,7 @@ def move():
     newLocations["right"]["y"] = currentLocation["y"]
 
     #choosing a move that doesn't kill us
-    moves = []
-    counter = 0
-    for location in newLocations.values():
-        print("\n\n location: ", location, "\n\n")
-        if location not in data["you"]["body"][:-1] and location['x'] not in xWalls and location['y'] not in yWalls and location not in snakeSpots:
-            moves.append(directions[counter])
-        counter += 1
-    
+    moves = getSafeMoves(currentLocation)    
 
     # for key in directions:
     if len(moves) == 0:
