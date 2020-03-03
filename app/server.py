@@ -72,6 +72,11 @@ def move():
         newLocations["right"]["x"] = location["x"]+1
         newLocations["right"]["y"] = location["y"]
         return newLocations
+    
+    def HasFood(location):
+        if location in board.food:
+            return True
+        return False
 
     directions = ["up", "down", "left", "right"]
     board = Board(data['board']['height'], data['board']['width'], data['board']['food'], data['board']['snakes'])
@@ -101,7 +106,15 @@ def move():
         elif directionsOpen > mostDirectionsOpen:
             goodMoves = [option]
             mostDirectionsOpen = directionsOpen
-
+    
+    if player.health < 40:
+    #prioritize finding food if all else is equal
+        foodMoves = []
+        for option in moves:
+            if HasFood(GetNewLocations(currentLocation)[option]):
+                foodMoves.append(option)
+        if len(foodMoves) > 0:
+            goodMoves = foodMoves
     print("\n good moves: ", goodMoves)
     # for key in directions:
     if len(moves) == 0:
