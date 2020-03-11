@@ -50,11 +50,13 @@ def move():
     directions = ["up", "down", "left", "right"]
     board = Board(data)
 
-    moves = board.getLegalMoves(board.player.head, directions)
+    moves = board.getLegalMoves(board.player.head)
     if len(moves) == 0:
         move = random.choice(directions)
+        # board.makeMove(move, board.player.head, board.player)
     else:
         move = random.choice(moves)
+        # board.makeMove(move, board.player.head, board.player)
 
     # Shouts are messages sent to all the other snakes in the game.
     # Shouts are not displayed on the game board.

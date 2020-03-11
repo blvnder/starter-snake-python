@@ -6,8 +6,36 @@ class Board():
         self.width = data['board']['width']
         self.food = data['board']['food']
         self.snakes = self.getSnakes(data)
+        self.snakeSpots = self.getSnakeSpots()
         self.player = Snake(data['you'])
+        self.grid = self.makeGrid()
     
+    def makeGrid(self):
+        grid = [[0 for col in range(self.width)] for row in range(self.height)]
+
+        for grub in self.food:
+            grid[grub['x']][grub['y']] = 2
+        
+        for spot in self.snakeSpots:
+            grid[spot['x']][spot['y']] = 1
+        
+        return grid
+
+    def makeMove(self, move, location, player):
+        # If there's food at the move location
+        newLocations = self.getNewLocations(location)
+        loc = newLocations[move]
+        if self.grid[loc['x']][loc['y']] == 2:
+            self.grid[loc['x']][loc['y']] = 1
+            player.health = 100
+            player.body.insert(0, loc)
+            player.head = loc
+        self.grid[loc['x']][loc['y']] = 1
+        player.health -= 1
+        player.body.insert(0, loc)
+        player.head = loc
+        del player.body[-1]
+
     # Returns a list of enemy snake objects
     def getSnakes(self, data):
         enemies = []
@@ -25,19 +53,17 @@ class Board():
                 snakeSpots += snake.body
         return snakeSpots
     
-    
     def isValid(self, location):
         if location['x'] < 0 or location['x'] > self.width-1 or location['y'] < 0 or location['y'] > self.height-1:
             return False
-        snakeSpots = self.getSnakeSpots()
-        if location in snakeSpots:
+        if location in self.snakeSpots:
             return False
         if location in self.player.body[:-1]:
             return False
-        else: 
-            return True
+        return True
     
-    def getNewLocations(self, location, directions):
+    def getNewLocations(self, location):
+        directions = ["up", "down", "left", "right"]
         newLocations = {}
         for direction in directions:
             newLocations[direction] = {}
@@ -51,16 +77,15 @@ class Board():
         newLocations["right"]["y"] = location["y"]
         return newLocations
 
-    def getLegalMoves(self, location, directions):
+    def getLegalMoves(self, location):
         legalMoves = []
-        moves = self.getNewLocations(location, directions)
+        moves = self.getNewLocations(location)
         for key, value in moves.items():
             if self.isValid(value) == False:
                 continue
             legalMoves.append(key)
         return legalMoves
             
-
     def isWin(self):
         for snake in self.snakes:
             if snake.head == self.player.head:
