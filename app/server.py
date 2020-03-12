@@ -4,7 +4,10 @@ import random
 
 import bottle
 from bottle import HTTPResponse
-from game import *
+try:
+    from game import *
+except:
+    from app.game import *
 
 
 @bottle.route("/")
