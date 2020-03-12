@@ -4,7 +4,7 @@ import random
 
 import bottle
 from bottle import HTTPResponse
-from game import *
+import minimax as mm
 
 
 @bottle.route("/")
@@ -48,7 +48,7 @@ def move():
     print("MOVE:", json.dumps(data))
 
     directions = ["up", "down", "left", "right"]
-    board = Board(data)
+    board = mm.Board(data)
 
     moves = board.getLegalMoves(board.player.head)
     if len(moves) == 0:
