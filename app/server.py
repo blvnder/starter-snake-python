@@ -49,8 +49,9 @@ def move():
 
     directions = ["up", "down", "left", "right"]
     board = mm.Board(data)
+    player = mm.Snake(data['you'])
 
-    moves = board.getLegalMoves(board.player.head)
+    moves = board.getLegalMoves(player.head, player)
     if len(moves) == 0:
         move = random.choice(directions)
         # board.makeMove(move, board.player.head, board.player)

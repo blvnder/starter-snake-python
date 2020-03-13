@@ -7,9 +7,9 @@ class Board():
         self.food = data['board']['food']
         self.snakes = self.getSnakes(data)
         self.snakeSpots = self.getSnakeSpots()
-        self.player = Snake(data['you'])
         self.grid = self.makeGrid()
     
+    # Create a grid of the current game state
     def makeGrid(self):
         grid = [[0 for col in range(self.width)] for row in range(self.height)]
 
@@ -21,8 +21,12 @@ class Board():
         
         return grid
 
+    # Make a given move on the board
     def makeMove(self, move, location, player):
-        # If there's food at the move location
+        # If there's food at the new location:
+        # 1. Update board to mark cell with player body instead of food
+        # 2. Set player health to maximum (100)
+        # 3. Move player head into new location (thus extending length)
         newLocations = self.getNewLocations(location)
         loc = newLocations[move]
         if self.grid[loc['x']][loc['y']] == 2:
@@ -30,38 +34,56 @@ class Board():
             player.health = 100
             player.body.insert(0, loc)
             player.head = loc
+        # Otherwise:
+        # 1. Update board to mark cell with player body
+        # 2. Reduce player health by 1
+        # 3. Move player head into new location
+        # 4. Remove player tail from board
         self.grid[loc['x']][loc['y']] = 1
         player.health -= 1
         player.body.insert(0, loc)
         player.head = loc
         del player.body[-1]
 
-    # Returns a list of enemy snake objects
+    # Returns a list of all snake objects
     def getSnakes(self, data):
-        enemies = []
+        snakes = []
         for snake in data['board']['snakes']:
             s = Snake(snake)
-            if s.id != data['you']['id']:
-                enemies.append(s)
-        return enemies
+            snakes.append(s)
+        return snakes
     
     # Returns a list of cells occupied by enemy snakes
-    def getSnakeSpots(self):
+    def getSnakeSpots(self, player=None):
         snakeSpots = []
         if len(self.snakes) > 0:
             for snake in self.snakes:
-                snakeSpots += snake.body
+                if player is None:
+                    snakeSpots += snake.body
+                elif snake.id != player.id:
+                    snakeSpots += snake.body
         return snakeSpots
     
-    def isValid(self, location):
+    # Returns true if a given location is a valid move and false otherwise
+    def isValid(self, location, player):
+        # print("New location:", location)
+        # Check for out of bounds
         if location['x'] < 0 or location['x'] > self.width-1 or location['y'] < 0 or location['y'] > self.height-1:
+            # print("Out of bounds")
             return False
-        if location in self.snakeSpots:
+        # Check for collision with other snakes
+        snakeSpots = self.getSnakeSpots(player)
+        if location in snakeSpots:
+            # print("Enemy collision")
             return False
-        if location in self.player.body[:-1]:
+        # Check for collision with self (excluding tail)
+        if location in player.body[:-1]:
+            # print("Self collision")
             return False
+        # print("Valid move")
         return True
     
+    # Get coordinates of moves in all directions
     def getNewLocations(self, location):
         directions = ["up", "down", "left", "right"]
         newLocations = {}
@@ -77,13 +99,16 @@ class Board():
         newLocations["right"]["y"] = location["y"]
         return newLocations
 
-    def getLegalMoves(self, location):
+    # Get a list of legal moves for the current game state
+    def getLegalMoves(self, location, player):
         legalMoves = []
         moves = self.getNewLocations(location)
         for key, value in moves.items():
-            if self.isValid(value) == False:
+            # print("Current location:", location)
+            if self.isValid(value, player) == False:
                 continue
             legalMoves.append(key)
+        # print("Legal Moves:", legalMoves)
         return legalMoves
             
     def isWin(self):
