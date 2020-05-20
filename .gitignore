@@ -3,4 +3,6 @@
 .cmd
 .idea
 .vscode
+.ipynb_checkpoints
 venv
+BattlesnakeGym
